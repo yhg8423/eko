@@ -202,6 +202,8 @@ export class OpenaiProvider implements LLMProvider {
         _messages.push(message as any);
       }
     }
+    console.log("tools", tools);
+    console.log("tool_choice", tool_choice);
     return {
       stream: stream,
       stream_options: stream ? { include_usage: true } : undefined,
@@ -211,7 +213,7 @@ export class OpenaiProvider implements LLMProvider {
       messages: _messages,
       tools: tools,
       tool_choice: tool_choice,
-      parallel_tool_calls: tools ? false : undefined,
+      // parallel_tool_calls: tools ? false : undefined,
     };
   }
 

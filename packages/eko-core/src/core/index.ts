@@ -22,6 +22,7 @@ export class Eko {
     const agents = [...(this.config.agents || [])];
     let chain: Chain = new Chain(taskPrompt);
     let context = new Context(taskId, this.config, agents, chain);
+    console.log("context", context);
     if (contextParams) {
       Object.keys(contextParams).forEach((key) =>
         context.variables.set(key, contextParams[key])
@@ -35,6 +36,7 @@ export class Eko {
       }
       let planner = new Planner(context, taskId);
       context.workflow = await planner.plan(taskPrompt);
+      console.log("context.workflow", context.workflow);
       return context.workflow;
     } catch (e) {
       this.deleteTask(taskId);
@@ -61,6 +63,7 @@ export class Eko {
 
   public async execute(taskId: string): Promise<EkoResult> {
     let context = this.getTask(taskId);
+    console.log("context", context);
     if (!context) {
       throw new Error("The task does not exist");
     }
@@ -68,6 +71,7 @@ export class Eko {
       context.controller = new AbortController();
     }
     try {
+      console.log("execute", context);
       return await this.doRunWorkflow(context);
     } catch (e: any) {
       return {
@@ -84,6 +88,7 @@ export class Eko {
     taskId: string = uuidv4(),
     contextParams?: Record<string, any>
   ): Promise<EkoResult> {
+    console.log("run", taskPrompt, taskId, contextParams);
     await this.generate(taskPrompt, taskId, contextParams);
     return await this.execute(taskId);
   }
@@ -112,6 +117,7 @@ export class Eko {
   }
 
   private async doRunWorkflow(context: Context): Promise<EkoResult> {
+    console.log("doRunWorkflow");
     let agents = context.agents as Agent[];
     let workflow = context.workflow as Workflow;
     if (!workflow || workflow.agents.length == 0) {
@@ -126,12 +132,15 @@ export class Eko {
       context.checkAborted();
       let agentNode = workflow.agents[i];
       let agent = agentMap[agentNode.name];
+      console.log("agent name", agentNode.name);
       if (!agent) {
         throw new Error("Unknown Agent: " + agentNode.name);
       }
       let agentChain = new AgentChain(agentNode);
       context.chain.push(agentChain);
+      console.log("agentChain", agentChain);
       agent.result = await agent.run(context, agentChain);
+      console.log("agent result", agent.result);
       results.push(agent.result);
     }
     return {

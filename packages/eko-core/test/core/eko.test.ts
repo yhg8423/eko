@@ -37,7 +37,7 @@ async function run() {
       if (message.type == "tool_streaming") {
         return;
       }
-      console.log("message: ", JSON.stringify(message, null, 2));
+      // console.log("message: ", JSON.stringify(message, null, 2));
     },
   };
   let agents: Agent[] = [

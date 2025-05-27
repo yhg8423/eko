@@ -61,6 +61,7 @@ export class Agent {
     let agentContext = new AgentContext(context, this, agentChain);
     try {
       mcpClient && !mcpClient.isConnected() && (await mcpClient.connect());
+      console.log("runWithContext", agentContext, mcpClient, config.maxReactNum);
       return this.runWithContext(agentContext, mcpClient, config.maxReactNum);
     } finally {
       mcpClient && (await mcpClient.close());
@@ -125,6 +126,8 @@ export class Agent {
         return finalResult;
       }
       loopNum++;
+      console.log("loopNum", loopNum);
+      await new Promise(resolve => setTimeout(resolve, 500)); // 500ms 대기
     }
     return "Unfinished";
   }

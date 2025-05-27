@@ -86,6 +86,9 @@ export class RetryLanguageModel {
   }
 
   async callStream(request: LLMRequest): Promise<StreamResult> {
+    console.log("callStream", request);
+    console.log("request.toolChoice", request.toolChoice);
+    console.log("request.tools", request.tools);
     return await this.doStream({
       inputFormat: "messages",
       mode: {
@@ -108,6 +111,8 @@ export class RetryLanguageModel {
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
       const llm = this.getLLM(name);
+      console.log("llm", llm);
+      console.log("name", name);
       if (!llm) {
         continue;
       }
@@ -172,12 +177,14 @@ export class RetryLanguageModel {
       return null;
     }
     if (llm.provider == "openai") {
+      console.log("llm.config?.parallelToolCalls", llm.config?.parallelToolCalls);
       return createOpenAI({
         apiKey: llm.apiKey,
         baseURL: llm.config?.baseURL,
       }).languageModel(llm.model, {
         // disable_parallel_tool_use
-        parallelToolCalls: llm.config?.parallelToolCalls || false,
+        // parallelToolCalls: llm.config?.parallelToolCalls || false,
+        // parallelToolCalls: false,
       });
     } else if (llm.provider == "anthropic") {
       return createAnthropic({

@@ -173,7 +173,9 @@ export class Eko {
     }
 
     const result = await workflow.execute(this.ekoConfig.callback);
-    console.log(result);
+    console.log("result", result);
+    // 1초 대기
+    await new Promise(resolve => setTimeout(resolve, 1000));
     return result;
   }
 
